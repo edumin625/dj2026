@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>대진 바이브코딩 포트폴리오</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: 학년 구획 → 학생 카드(학번 라벨 + 3개 주제 트랙), PCB 기판처럼 정돈된 격자 */
+:root{
+  --bg:#f3f5f3; --surface:#ffffff; --ink:#17201e; --muted:#5b6865; --line:#d9e0dd;
+  --accent:#0d6b62; --accent-soft:#e1efec; --copper:#a85a22; --copper-soft:#f6e9de;
+  --empty:#9aa6a3;
+  --f-display:"Do Hyeon","IBM Plex Sans KR",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101615; --surface:#18201f; --ink:#e4ebe9; --muted:#9aa8a5; --line:#2a3533;
+  --accent:#4fbfb2; --accent-soft:#16312e; --copper:#e09a62; --copper-soft:#33241a; --empty:#5f6c69; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101615; --surface:#18201f; --ink:#e4ebe9; --muted:#9aa8a5; --line:#2a3533;
+  --accent:#4fbfb2; --accent-soft:#16312e; --copper:#e09a62; --copper-soft:#33241a; --empty:#5f6c69; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.6;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto}
+a{color:inherit}
+header.top{padding-block:40px 24px;display:grid;gap:10px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.15;margin:0;text-wrap:balance}
+.lead{color:var(--muted);max-width:62ch;margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.legend span{font-size:13px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface)}
+.legend b{font-weight:600}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar button{font:inherit;font-size:14px;cursor:pointer;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.bar button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.bar button:focus-visible,.bar input:focus-visible,a:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
+.bar input{font:inherit;font-size:14px;margin-left:auto;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-width:0;width:200px;max-width:100%}
+section.grade{margin-top:36px}
+.grade-head{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+.grade-head h2{font-family:var(--f-display);font-weight:400;font-size:30px;margin:0}
+.grade-head small{font-family:var(--f-mono);color:var(--muted);font-size:13px}
+.cards{display:grid;gap:16px}
+article.stu{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;display:grid;gap:16px}
+.stu-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.sid{font-family:var(--f-mono);font-weight:700;font-size:13px;letter-spacing:.04em;padding:3px 8px;border-radius:5px;background:var(--accent-soft);color:var(--accent)}
+.stu-head h3{font-family:var(--f-display);font-weight:400;font-size:26px;margin:0}
+.cls{color:var(--muted);font-size:13px}
+.meter{margin-left:auto;display:flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.pips{display:flex;gap:3px}
+.pips i{width:10px;height:10px;border-radius:2px;background:var(--line)}
+.pips i.on{background:var(--accent)}
+.tracks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:860px){.tracks{grid-template-columns:1fr}}
+.track{min-width:0;display:grid;align-content:start;gap:8px;padding-top:10px;border-top:2px solid var(--line)}
+.track[data-k="game"]{border-top-color:var(--copper)}
+.track[data-k="data"]{border-top-color:var(--accent)}
+.track[data-k="proj"]{border-top-color:var(--ink)}
+.track h4{margin:0;font-size:12px;font-family:var(--f-mono);letter-spacing:.08em;color:var(--muted);font-weight:500}
+.item{display:grid;gap:2px;min-width:0}
+.item+.item{margin-top:6px}
+.shot{display:block;margin:4px 0 6px;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--bg);aspect-ratio:16/10;max-width:100%}
+.shot img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .25s ease}
+.shot:hover img{transform:scale(1.03)}
+@media (prefers-reduced-motion:reduce){.shot img{transition:none}}
+footer a{color:var(--accent)}
+.lab{font-size:12px;font-weight:600;color:var(--muted)}
+.item a.ttl{font-weight:600;text-decoration:none;color:var(--ink);overflow-wrap:anywhere;line-height:1.4}
+.item a.ttl:hover{color:var(--accent);text-decoration:underline}
+.item a.ttl::after{content:" ↗";color:var(--accent);font-weight:400}
+.desc{font-size:13px;color:var(--muted);line-height:1.5}
+.feat{margin:4px 0 0;padding:8px 10px 8px 22px;background:var(--copper-soft);border-radius:6px;font-size:13px;line-height:1.5}
+.feat li+li{margin-top:2px}
+.sub{font-size:12px}
+.sub a{color:var(--copper);text-decoration:none;font-weight:600}
+.sub a:hover{text-decoration:underline}
+.none{font-size:13px;color:var(--empty)}
+.note{font-size:12px;color:var(--copper)}
+footer{margin-top:48px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">Daejin Electronic Comm. HS · Vibe Coding 2026</div>
+  <h1>바이브코딩으로 만든 학생 포트폴리오</h1>
+  <div class="legend">
+    <span><b style="color:var(--copper)">게임 만들기</b> · 보석게임 · 과제게임</span>
+    <span><b style="color:var(--accent)">공공데이터 활용</b> · 편의점지도 · 부산상가지도 · 일일박스오피스 · 시간표조회</span>
+    <span><b>공공데이터 프로젝트</b> · PRD · 프로젝트</span>
+  </div>
+</header>
+
+<nav class="bar" aria-label="학년 필터">
+  <button type="button" data-g="all" aria-pressed="true">전체</button>
+  <button type="button" data-g="3" aria-pressed="false">3학년</button>
+  <button type="button" data-g="2" aria-pressed="false">2학년</button>
+  <button type="button" data-g="1" aria-pressed="false">1학년</button>
+  <input id="q" type="search" placeholder="이름·학번·작품 검색" aria-label="검색">
+</nav>
+
+<main id="root"></main>
+
+<footer>출처: <a href="https://bit.ly/4yfdKuD" target="_blank" rel="noopener">https://bit.ly/4yfdKuD</a></footer>
+</div>
+
+<script>
+const PAD="https://padlet.com/pnumin625/padlet-s023zt1394ececmnjrbv/wish/";
+const AIS=id=>`https://ai.studio/apps/${id}?fullscreenApplet=true`;
+// 각 항목: [url, 제목, 설명]
+const S=[
+{id:"30514",name:"이준화",
+ jewel:["https://dj-game-two.vercel.app/","Sweet Match-3 보석 퍼즐 & 구현계획서","캔디 크러시 스타일 매치-3 퍼즐과 상세 아키텍처 구현계획서"],
+ studio:[AIS("99307843-666e-42c5-ab69-f7d5fe85eeda"),["스테이지 1~10 추가","무한모드 (더 둘 곳이 없으면 자동 종료)","아이템 추가","잘못된 매칭 시 되돌리기","특수 보석끼리는 모양이 달라도 상호작용","4×4 합체 지원"]],
+ task:["https://tankgame-wine.vercel.app/","대포 키우기 IO (Diep.io Style & GDD)","diep.io 스타일 2D 실시간 탱크 육성 배틀 아레나 + 게임 개발 계획서"],
+ cvs:["https://pythonman12.github.io/Convivi_map/","전국 편의점 지도","전국 54,446개 편의점을 시·도, 시·군·구, 브랜드별로 검색"],
+ shop:["https://pythonman12.github.io/Food_map/","부산 상가 업종별 지도","부산 159,689개 상가를 10대 업종·16개 구·군별로 검색"],
+ box:["https://dailybox-swart.vercel.app/","KOBIS 일일 박스오피스","일일 순위, 관객·매출 추이와 영화 상세정보 조회"],
+ time:["https://school-time-kohl.vercel.app/","대진전자통신고 시간표 & 과제 플래너","NEIS 오픈API 연동 실시간 시간표 + 과제·수행평가 관리"],
+ prd:[PAD+"dMA1W8wo87bvZ4OV","프로젝트 PRD (prd.html)","Padlet 게시물에 첨부된 PRD 문서"],
+ proj:["https://dj-homepage.vercel.app/","대진전자통신고등학교 학생 포털","급식·시간표·학사일정·취업/진학·익명 커뮤니티 통합 포털"]},
+
+{id:"20408",name:"박성진",
+ jewel:["https://dj-game1-rho.vercel.app/","Jewel Slime Match","슬라임과 보석을 매칭하며 다양한 기믹을 푸는 매치-3 퍼즐"],
+ studio:[AIS("1ad9d40d-d742-4293-b8f1-8886c3279d9d"),["스테이지 클리어 이펙트","배경 추가, 보석·스킬 단순화","라운드 추가","난이도에 따라 스킬 개수 증가"]],
+ task:["https://dj-game2.vercel.app/","비트 스트림 - PulseBeat Cyber Rhythm","타격감과 비주얼을 살린 웹 아케이드 4키 리듬게임"],
+ cvs:["https://psinserver-jpg.github.io/dj_map/","부산시 편의점 지도","브랜드 원클릭 필터 지원"],
+ shop:["https://psinserver-jpg.github.io/dj_map2/","부산 상가지도","부산 상권 정보를 지도에서 검색하고 상세 정보 확인"],
+ box:["https://dj-movie-eight.vercel.app/","일일 박스오피스","날짜별 순위, 관객 수, 매출과 영화 상세정보"],
+ time:["https://psinserver-jpg.github.io/dj_time/","대진 시간표","PC는 주간 시간표, 모바일은 오늘의 수업으로 표시"],
+ prd:["https://docs.google.com/document/d/1kEme_wGCKaan0o4hL4fOPy1PAZ0NEBHCU6MhiBfw5rw/edit?usp=sharing","CERT ARCHIVE & AI — PRD","Google 문서로 작성한 제품 요구사항 정의서"],
+ proj:["https://certvault-seven.vercel.app/","자격증 허브 & AI 진로 멘토","학과별 필수·추천 자격증 가이드, Claude AI 커리어 추천과 기출 퀴즈"]},
+
+{id:"20412",name:"여규민",
+ jewel:["https://school-game1-nine.vercel.app/","Blocks","반응형 매치-3 퍼즐, 레트로 PDA 스킨과 모던 모드 제공"],
+ studio:[AIS("58403146-8855-42ca-b582-895e9bec7e97"),["모드 선택: 일반·타임어택·연습·폭죽 모드","드래그 이동","2×2 사각형 매칭 지원"]],
+ task:["https://pdj-game11.vercel.app/","Jimini AI 추리 탐정","현장 조사·용의자 심문·SNS 디지털 수사로 진범을 찾는 AI 추리 게임"],
+ cvs:["https://r2adkr.github.io/store/","부산 편의로드 - 24BUSAN","부산 24시 편의점 지도"],
+ shop:["https://r2adkr.github.io/store2/","부산 상가지도","약 16만 개 업소 데이터를 불러오는 상가 지도"],
+ proj:["https://bus-map-three.vercel.app/","버스 지도","전국 시내버스 도착 시간과 실시간 버스 위치"]},
+
+{id:"20414",name:"이유준",
+ jewel:["https://dj-game1-nine.vercel.app/","Jewel Quest Ancient - 피라미드 보석 퍼즐","고대 피라미드 테마, 번개 다이아몬드·폭탄 보석·연속 콤보, 모바일 스와이프 지원"],
+ proj:["https://project-gamma-three-18.vercel.app/","급식 정보 & 만족도 투표","NEIS 실시간 급식 정보와 학생 만족도 투표 시스템"]},
+
+{id:"20415",name:"이재용",
+ jewel:["https://dj-game1-woad.vercel.app/","Candy Jewel Match","캔디 크러시 스타일 매치-3 보석 퍼즐"],
+ studio:[AIS("dd412ab5-2800-47fd-bda4-e039dfb6e0ff"),[]],
+ task:["https://dj-game2-k3oh.vercel.app/","쿠키 런닝 액션","쿠키런 스타일 횡스크롤 런닝 게임의 기획서(GDD)와 플레이 프로토타입"],
+ cvs:["https://jkpdj17-arch.github.io/dj_map1/","부산 편의점 지도","부산 2,780개 편의점을 지역·브랜드별 검색, 길찾기 제공"],
+ box:["https://dj-movie-nine.vercel.app/","일일 박스오피스 (KOBIS)","KOBIS OpenAPI 기반 일일 순위와 영화 상세정보"],
+ time:["https://dj-time2.vercel.app/","시간표 & 과제 포털","NEIS 시간표, 실시간 교시 안내, 과제 제출 포털"],
+ prd:["https://djsh-snowy.vercel.app/","학사일정 및 행사 알리미 (PRD 버전)","NEIS 학사일정 연동 캘린더, 브리핑 알림, D-Day 안내"],
+ proj:["https://dj-shc2.vercel.app/","학사일정 및 행사 알리미","월간/주간 캘린더, 맞춤 브리핑, GitHub 학생 계정 연동"]},
+
+{id:"20416",name:"이주형",
+ jewel:["https://dj-game1-eta.vercel.app/","보석 매치 3 (Jewel Match-3 Puzzle)","8×8 보드에서 연쇄 콤보를 즐기는 매치-3 퍼즐"],
+ studio:[AIS("788ee3cd-0f10-4172-be7e-77ed803dfadf"),["2×2 블록도 부서지도록 판정 수정","아이템 획득 기준 10,000점으로 상향 (밸런스)","목표 점수 범위 확대"]],
+ task:["https://dj-game2-tau.vercel.app/","Classic Retro Tetris","7-bag, 하드/소프트 드롭, 홀드, 고스트 피스 지원"],
+ cvs:["https://ljooooh0413-alt.github.io/dj_map/","부산 편의점 지도","2,780개 편의점, 브랜드 검색과 구·군 필터"],
+ box:["https://dj-movie.vercel.app/","KOBIS 일일 박스오피스","KOBIS OpenAPI 기반 순위와 영화 상세정보"],
+ time:["https://dj-time-mu.vercel.app/","시간표 시스템 & PRD","NEIS 연동 학년·학급별 실시간 시간표와 제품 기획서"],
+ proj:["https://dj-academy-map2-1bcz.vercel.app/","EduMap","전국 학원·교습소 검색, 즐겨찾기 동기화, TMAP·도보 경로 안내"]},
+
+{id:"20508",name:"백재민",
+ jewel:["https://dj-game-01.vercel.app/","Jewel Pop Adventure","모바일 터치 드래그, 특수 보석·콤보·레벨 목표 제공"],
+ cvs:["https://store-kappa-pied.vercel.app/","부산 편의점 지도","2,780곳을 브랜드·지역별로 조회하는 인터랙티브 지도"],
+ box:["https://movie-api-prac.vercel.app/","CineBox","KOBIS 일별 박스오피스와 영화 정보"],
+ prd:["https://school-map-pi.vercel.app/onboarding","캠퍼스 스팟 (온보딩)","PRD 단계에서 올린 서비스 소개 화면"],
+ proj:["https://school-map-pi.vercel.app/map","캠퍼스 스팟 (Campus Spot)","혼밥·가성비 맛집, 스터디카페, 24시 시설을 담은 학교 주변 지도"]},
+
+{id:"10403",name:"신예지",
+ jewel:["https://daejin-game-1.vercel.app/","Gem Match Puzzle","콤보와 특수 보석 효과가 있는 매치-3 퍼즐"],
+ studio:[AIS("22b261f9-0729-4374-9127-08cbf19dc5da"),[]],
+ task:["https://daejin-game-2.vercel.app/","3D Low-Poly Whack-a-Mole","WebGL 로우폴리 두더지 잡기, 물리 기반 망치와 콤보"],
+ cvs:["https://siny81818-lgtm.github.io/dj_map1/","부산시 편의점 지도",""],
+ time:["https://dj-t-git-main-dj-f9c3.vercel.app/","대진 시간표","",
+   "Vercel 보호 배포로 설정되어 있어 로그인 없이는 열리지 않습니다."]},
+
+{id:"10409",name:"김선우",
+ studio:[AIS("4e48b1d2-af3a-4921-8a9e-600df2c4a117"),["특정 점수를 넘으면 스킨 변경","유물 기능으로 블록을 한꺼번에 대량 파괴"]],
+ task:["https://bit-asdf-41wv.vercel.app/","과제 게임",""],
+ cvs:["https://wooden12340-dev.github.io/dj_map1/","부산 편의점 지도","구·군 선택 필터"],
+ box:["https://qwer-1-7q12.vercel.app/","Daily Movie Box Office","날짜 선택으로 순위 조회, 환경변수로 API 키 보호"],
+ time:["https://this-is-time-6594.vercel.app/","시간표 서비스 PRD","NEIS hisTimetable API 기반 맞춤형 시간표 PRD와 인터랙티브 플랫폼"],
+ proj:["https://khdsahlsahkjfdsakjhkjha-qrwr.vercel.app/","Doc2Site Studio","문서·계획서·강의 요약을 인터랙티브 웹사이트로 바꾸는 스튜디오"]},
+
+{id:"10413",name:"박세종",
+ jewel:["https://jewels-game-1.vercel.app/","보석 게임",""],
+ studio:[AIS("c118da0e-351f-4e02-a6ee-6b038e696fa7"),["커스텀 레벨: 빈 공간(void), 잠금/해제","난이도별 보석 종류 수 조절","모바일 UI용 상단 바"]],
+ cvs:["https://schoolpsj1015-afk.github.io/dj_map_1/web/index.html","부산 편의점 지도","편의점 검색과 필터"],
+ box:["https://movie-cheak-pu79-nine.vercel.app/","KOBIS 일일 박스오피스","순위·관객 통계, 영화 상세정보, AI 관람 추천"],
+ time:["https://fdgdfgfhrehtrrte5y654rty456trefto34.vercel.app/","시간표 & 학습 플래너","캘린더 연동, 숙제 기록, 방과후 활동 관리"],
+ prd:[PAD+"4b3zaM2EROm8Q2j7","프로젝트 PRD (prd.md)","Padlet 게시물에 첨부된 PRD 문서"],
+ proj:["https://dj-tableclock-alimi.vercel.app/","통합 스마트 알리미 v8.0","학사·실시간 시간표·급식 알레르기 필터, Supabase GitHub OAuth"]},
+
+{id:"10511",name:"김주한",
+ jewel:["https://game1-six-blue.vercel.app/","보석 매치 3 퍼즐 (Jewel Match)","8×8 비주얼드 스타일, 터치·스와이프, 특수 보석과 오디오 효과"],
+ cvs:["https://kjh0306-abcd.github.io/map1/","부산 편의점 상권 지도 대시보드","오픈소스 지도 기반 상권 대시보드"],
+ box:["https://dailyboxoffice-tk94-alpha.vercel.app/","KOBIS 일일 박스오피스","KOBIS OpenAPI 기반 순위와 영화 상세정보"],
+ time:["https://daejinclasses-cyfm-liard.vercel.app/","대진전자통신고 시간표","이번 주 시간표, 급식 메뉴, 학사일정 조회"]},
+
+{id:"10517",name:"소도훈",
+ jewel:["https://daejingame1-69wb.vercel.app/","Pocket PC Bejeweled","윈도우 모바일(Pocket PC) 감성의 정통 비주얼드"],
+ studio:[AIS("85be5182-aec6-40d6-b97c-1f4c73f3ed69"),["같은 보석이 사각형으로 모이면 터짐","힌트 기능","20,000점마다 레벨 업, 난이도 상승","홈 화면에서 여러 게임 선택"]],
+ task:["https://daejingame2.vercel.app/","Classic 8-Ball & Stage Pool","8볼 AI 대전과 트릭샷 스테이지가 있는 물리 기반 당구"],
+ cvs:["https://sodohun.github.io/map1/","Busan CVS","부산 편의점 지도"],
+ proj:["https://schedule-app-two-phi.vercel.app/","일정 관리 앱","Next.js로 만든 일정 관리 웹앱"]}
+];
+
+const TRACKS=[
+ {k:"game",t:"게임 만들기",slots:[["jewel","보석게임"],["task","과제게임"]]},
+ {k:"data",t:"공공데이터 활용",slots:[["cvs","편의점지도"],["shop","부산상가지도"],["box","일일박스오피스"],["time","시간표조회"]]},
+ {k:"proj",t:"공공데이터 프로젝트",slots:[["prd","프로젝트 PRD"],["proj","프로젝트"]]}
+];
+const IMG=new Set("10403_cvs 10403_jewel 10403_task 10409_box 10409_cvs 10409_proj 10409_time 10413_box 10413_cvs 10413_prd 10413_time 10511_box 10511_cvs 10511_jewel 10511_time 10517_cvs 10517_jewel 10517_proj 10517_task 20408_box 20408_cvs 20408_jewel 20408_prd 20408_proj 20408_shop 20408_task 20412_cvs 20412_jewel 20412_proj 20412_shop 20412_task 20414_jewel 20414_proj 20415_box 20415_cvs 20415_jewel 20415_prd 20415_proj 20415_task 20415_time 20416_box 20416_cvs 20416_jewel 20416_proj 20416_task 20416_time 20508_box 20508_cvs 20508_jewel 20508_prd 30514_box 30514_cvs 30514_jewel 30514_proj 30514_shop 30514_task 30514_time".split(" "));
+const ALL=TRACKS.flatMap(t=>t.slots.map(s=>s[0]));
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function itemHTML(s,key,label){
+  let v=s[key];
+  if(key==="jewel"&&!v&&s.studio) v=[s.studio[0],"AI Studio 버전","Vercel 배포 링크 없음"];
+  if(!v) return `<div class="item"><span class="lab">${label}</span><span class="none">미등록</span></div>`;
+  const ik=s.id+"_"+key;
+  let h=`<div class="item"><span class="lab">${label}</span>`;
+  if(IMG.has(ik)) h+=`<a class="shot" href="${esc(v[0])}" target="_blank" rel="noopener" tabindex="-1"><img src="shots/${ik}.jpg" alt="${esc(s.name)} ${esc(label)} 결과 화면" loading="lazy" width="640" height="400"></a>`;
+  h+=`<a class="ttl" href="${esc(v[0])}" target="_blank" rel="noopener">${esc(v[1])}</a>`;
+  if(v[2]) h+=`<span class="desc">${esc(v[2])}</span>`;
+  if(v[3]) h+=`<span class="note">${esc(v[3])}</span>`;
+  if(key==="jewel"&&s.studio){
+    const [u,f]=s.studio;
+    if(f.length) h+=`<ul class="feat">${f.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`;
+    if(s.jewel) h+=`<span class="sub"><a href="${esc(u)}" target="_blank" rel="noopener">AI Studio 원본 ↗</a> <span class="desc">(Google 로그인 필요)</span></span>`;
+  }
+  return h+`</div>`;
+}
+function card(s){
+  const done=ALL.filter(k=>s[k]||(k==="jewel"&&s.studio)).length;
+  const g=s.id[0], cls=+s.id.slice(1,3), no=+s.id.slice(3);
+  const hay=[s.id,s.name,...ALL.map(k=>s[k]?s[k][1]+" "+s[k][2]:"")].join(" ").toLowerCase();
+  return `<article class="stu" data-hay="${esc(hay)}">
+   <div class="stu-head"><span class="sid">${s.id}</span><h3>${esc(s.name)}</h3><span class="cls">${g}학년 ${cls}반 ${no}번</span>
+    <span class="meter" title="등록한 과제 수"><span class="pips">${ALL.map(k=>`<i class="${(s[k]||(k==="jewel"&&s.studio))?"on":""}"></i>`).join("")}</span>${done}/${ALL.length}</span></div>
+   <div class="tracks">${TRACKS.map(t=>`<div class="track" data-k="${t.k}"><h4>${t.t}</h4>${t.slots.map(([k,l])=>itemHTML(s,k,l)).join("")}</div>`).join("")}</div>
+  </article>`;
+}
+const root=document.getElementById("root");
+root.innerHTML=["3","2","1"].map(g=>{
+  const list=S.filter(s=>s.id[0]===g).sort((a,b)=>a.id.localeCompare(b.id));
+  return `<section class="grade" data-g="${g}" id="grade${g}"><div class="grade-head"><h2>${g}학년</h2><small>${list.length}명</small></div><div class="cards">${list.map(card).join("")}</div></section>`;
+}).join("");
+
+let grade="all";
+const q=document.getElementById("q");
+function apply(){
+  const term=q.value.trim().toLowerCase();
+  document.querySelectorAll("section.grade").forEach(sec=>{
+    let vis=0;
+    sec.querySelectorAll("article.stu").forEach(a=>{const ok=!term||a.dataset.hay.includes(term);a.classList.toggle("hide",!ok);if(ok)vis++;});
+    sec.classList.toggle("hide",(grade!=="all"&&sec.dataset.g!==grade)||vis===0);
+  });
+}
+document.querySelectorAll(".bar button").forEach(b=>b.addEventListener("click",()=>{
+  grade=b.dataset.g;
+  document.querySelectorAll(".bar button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  apply();
+}));
+q.addEventListener("input",apply);
+</script>
+</body>
+</html>
